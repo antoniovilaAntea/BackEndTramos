@@ -108,10 +108,8 @@ const getFechasUnicas = async () => {
     const pool = await getConnection();
     const result = await pool
       .request()
-      .query(
-        "SELECT DISTINCT CONVERT(varchar, fecha, 23) as fecha FROM d_t ORDER BY fecha DESC"
-      );
-
+      .query("SELECT DISTINCT fecha FROM datos_tramo ORDER BY fecha DESC");
+    console.log(result);
     return result.recordset.map((item) => item.fecha);
   } catch (error) {
     throw error;
