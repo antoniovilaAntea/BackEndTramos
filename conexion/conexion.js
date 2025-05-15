@@ -100,18 +100,17 @@ app.post("/api/d_t/optimized", async (req, res) => {
   }
 });
 
-const { getConnection } = require("./conexion");
-
-// Añade esta función para obtener fechas únicas
 const getFechasUnicas = async () => {
   try {
-    const pool = await getConnection();
-    const result = await pool
-      .request()
-      .query("SELECT DISTINCT fecha FROM datos_tramo ORDER BY fecha DESC");
-    console.log(result);
-    return result.recordset.map((item) => item.fecha);
+    // Usamos el pool directamente que ya tienes configurado para PostgreSQL
+    const result = await pool.query(
+      "SELECT DISTINCT fecha FROM datos_tramo ORDER BY fecha DESC"
+    );
+
+    // En pg, los resultados están en result.rows
+    return result.rows.map((item) => item.fecha.toISOString().split("T")[0]);
   } catch (error) {
+    console.error("Error en getFechasUnicas:", error); // Mejor logging
     throw error;
   }
 };
