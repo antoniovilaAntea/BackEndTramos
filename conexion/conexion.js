@@ -107,7 +107,7 @@ const getFechasUnicas = async () => {
       SELECT DISTINCT fecha 
       FROM datos_tramo 
       WHERE fecha ~ '^\\d{4}-\\d{2}-\\d{2}$'  -- Filtra solo strings con formato YYYY-MM-DD
-      ORDER BY fecha DESC
+      ORDER BY fecha ASC
     `);
 
     return result.rows.map((item) => item.fecha);
