@@ -22,9 +22,25 @@ const pool = new Pool({
 });
 
 // Middleware
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://mapa-red-de-carreteras.vercel.app",
+  "https://mapa-red-de-carreteras-antoniovilaantea.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // cámbialo a tu frontend si lo despliegas
+    origin: function (origin, callback) {
+      // Permitir solicitudes sin origen (como aplicaciones móviles o curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
