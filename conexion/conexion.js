@@ -102,15 +102,17 @@ app.post("/api/d_t/optimized", async (req, res) => {
 
 const getFechasUnicas = async () => {
   try {
-    // Usamos el pool directamente que ya tienes configurado para PostgreSQL
-    const result = await pool.query(
-      "SELECT DISTINCT fecha FROM datos_tramo ORDER BY fecha DESC"
-    );
+    // Primero intentamos parsear como fecha para validar el formato
+    const result = await pool.query(`
+      SELECT DISTINCT fecha 
+      FROM datos_tramo 
+      WHERE fecha ~ '^\\d{4}-\\d{2}-\\d{2}$'  -- Filtra solo strings con formato YYYY-MM-DD
+      ORDER BY fecha DESC
+    `);
 
-    // En pg, los resultados están en result.rows
-    return result.rows.map((item) => item.fecha.toISOString().split("T")[0]);
+    return result.rows.map((item) => item.fecha);
   } catch (error) {
-    console.error("Error en getFechasUnicas:", error); // Mejor logging
+    console.error("Error en getFechasUnicas:", error);
     throw error;
   }
 };
