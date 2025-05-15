@@ -100,6 +100,35 @@ app.post("/api/d_t/optimized", async (req, res) => {
   }
 });
 
+const { getConnection } = require("./conexion");
+
+// Añade esta función para obtener fechas únicas
+const getFechasUnicas = async () => {
+  try {
+    const pool = await getConnection();
+    const result = await pool
+      .request()
+      .query(
+        "SELECT DISTINCT CONVERT(varchar, fecha, 23) as fecha FROM d_t ORDER BY fecha DESC"
+      );
+
+    return result.recordset.map((item) => item.fecha);
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Añade esta ruta GET junto a tu POST existente
+app.get("/api/fechas-unicas", async (req, res) => {
+  try {
+    const fechas = await getFechasUnicas();
+    res.json(fechas);
+  } catch (error) {
+    console.error("Error en /api/fechas-unicas:", error);
+    res.status(500).json({ error: "Error al obtener fechas" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor en puerto ${port}`);
 });
